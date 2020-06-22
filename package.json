@@ -1,0 +1,24 @@
+{
+  "name": "capstone",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "lite-server",
+    "test": "truffle test ./eth-contracts/test/TestERC721Mintable.js && truffle test ./eth-contracts/test/TestSolnSquareVerifier.js && ./eth-contracts/test/TestSquareVerifier.js"
+  },
+  "keywords": [],
+  "author": "pk <pkrasam@gmail.com> (https://ipfs.infura.io/ipfs/QmSXiR9Khm3yo1J67nUopvVBxFJ8YGN2fUGZ34Etr3m92x/)",
+  "license": "MIT",
+  "devDependencies": {
+    "lite-server": "2.4.0"
+  },
+  "dependencies": {
+    "openzeppelin-solidity": "^2.2.0",
+    "solc": "^0.5.2",
+    "solc-js": "^0.5.2",
+    "truffle": "5.1.31",
+    "@truffle/hdwallet-provider": "1.0.35",
+    "web3": "1.2.9"
+  }
+}
