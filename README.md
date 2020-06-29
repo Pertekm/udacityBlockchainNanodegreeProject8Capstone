@@ -2,12 +2,30 @@
 
 The capstone will build upon the knowledge you have gained in the course in order to build a decentralized housing product. 
 
-Cmds:
-docker run -v ${PWD}:/home/zokrates/code -ti zokrates/zokrates /bin/bash
+# ZoKrates
+Version 0.4.6 for solidity version 0.5, instead of latest for 0.6. because current truffle (version 5.1) does only support 0.5.
+`docker run -v ${PWD}:/home/zokrates/code -ti zokrates/zokrates:0.4.6 /bin/bash`
 
-cd code/zokrates/code/square
+`cd code/zokrates/code/square`
 
-~/zokrates compile -i square.code
+`~/zokrates compile -i square.code`
+
+`~/zokrates setup`
+
+`~/zokrates compute-witness -a 3 9`
+
+`~/zokrates generate-proof`
+
+`~/zokrates export-verifier`
+
+Copy generated verifier.sol to ./eth-contracts\contracts\SquareVerifier.sol
+
+# Truffle
+## Compile
+`truffle compile`
+
+## Test
+`npm test`
 
 # Project Resources
 

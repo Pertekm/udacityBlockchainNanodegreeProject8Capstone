@@ -7,26 +7,60 @@ import 'openzeppelin-solidity/contracts/token/ERC721/IERC721Receiver.sol';
 import "./Oraclize.sol";
 
 contract Ownable {
-    //  TODO's
-    //  1) create a private '_owner' variable of type address with a public getter function
-    //  2) create an internal constructor that sets the _owner var to the creater of the contract 
-    //  3) create an 'onlyOwner' modifier that throws if called by any account other than the owner.
-    //  4) fill out the transferOwnership function
-    //  5) create an event that emits anytime ownerShip is transfered (including in the constructor)
+    address private _owner;
+
+    function getOwner() public returns (address) {
+        return _owner;
+    }
+
+    constructor () internal {
+        emit OwnerShipTransfered(_owner, msg.sender);
+        _owner = msg.sender;
+    }
+
+    modifier onlyOwner() {
+        require(this.getOwner() == msg.sender, "Only contract owner is allowed to do this");
+        _; // All modifiers require an "_" which indicates where the function body will be added
+    }
+
+    event OwnerShipTransfered(address from, address to);
 
     function transferOwnership(address newOwner) public onlyOwner {
-        // TODO add functionality to transfer control of the contract to a newOwner.
+        // transfer control of the contract to a newOwner.
         // make sure the new owner is a real address
-
+        require(newOwner != 0, "Not a real address");
+        emit OwnerShipTransfered(_owner, newOwner);
+        _owner = newOwner;
     }
 }
 
-//  TODO's: Create a Pausable contract that inherits from the Ownable contract
-//  1) create a private '_paused' variable of type bool
-//  2) create a public setter using the inherited onlyOwner modifier 
-//  3) create an internal constructor that sets the _paused variable to false
-//  4) create 'whenNotPaused' & 'paused' modifier that throws in the appropriate situation
-//  5) create a Paused & Unpaused event that emits the address that triggered the event
+//  TODO's:
+//  4) use 'whenNotPaused' & 'paused' modifier: thrown in the appropriate situation
+//  5) use Paused & Unpaused event that emits the address that triggered the event
+contract Pausable is Ownable {
+    bool private _paused;
+
+    function setPaused(bool paused) public onlyOwner {
+        _paused = paused;
+    }
+
+    constructor () internal {
+        _paused = false;
+    }
+
+    modifier whenNotPaused() {
+        require(_paused == false, "Paused should be false");
+        _; // All modifiers require an "_" which indicates where the function body will be added
+    }
+
+    modifier paused() {
+        require(_paused, "Paused should be true");
+        _; // All modifiers require an "_" which indicates where the function body will be added
+    }
+
+    event Paused(address trigger);
+    event Unpaused(address trigger);
+}
 
 contract ERC165 {
     bytes4 private constant _INTERFACE_ID_ERC165 = 0x01ffc9a7;
@@ -59,7 +93,7 @@ contract ERC165 {
      * @dev internal method for registering an interface
      */
     function _registerInterface(bytes4 interfaceId) internal {
-        require(interfaceId != 0xffffffff);
+        require(interfaceId != 0xffffffff, "Interface id invalid");
         _supportedInterfaces[interfaceId] = true;
     }
 }

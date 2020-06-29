@@ -1,5 +1,5 @@
 // ToDo siehe Zeile 454 in eth-contracts\contracts\ERC721Mintable.sol
-var ERC721MintableComplete = artifacts.require('ERC721MintableComplete');
+var ERC721MintableComplete = artifacts.require('ERC721Mintable');
 
 contract('TestERC721Mintable', accounts => {
 
@@ -14,20 +14,20 @@ contract('TestERC721Mintable', accounts => {
         })
 
         it('should return total supply', async function () { 
-            
+            // ToDo
         })
 
         it('should get token balance', async function () { 
-            
+            // ToDo
         })
 
         // token uri should be complete i.e: https://s3-us-west-2.amazonaws.com/udacity-blockchain/capstone/1
         it('should return token uri', async function () { 
-            
+            // ToDo
         })
 
         it('should transfer token from one owner to another', async function () { 
-            
+            // ToDo
         })
     });
 
@@ -37,11 +37,11 @@ contract('TestERC721Mintable', accounts => {
         })
 
         it('should fail when minting when address is not contract owner', async function () { 
-            
+            // ToDo
         })
 
         it('should return contract owner', async function () { 
-            
+            // ToDo
         })
 
     });
