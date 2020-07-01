@@ -1,15 +1,15 @@
 pragma solidity ^0.5.0;
 
-import 'openzeppelin-solidity/contracts/utils/Address.sol';
-import 'openzeppelin-solidity/contracts/drafts/Counters.sol';
-import 'openzeppelin-solidity/contracts/math/SafeMath.sol';
-import 'openzeppelin-solidity/contracts/token/ERC721/IERC721Receiver.sol';
+import '../../node_modules/openzeppelin-solidity/contracts/utils/Address.sol';
+import '../../node_modules/openzeppelin-solidity/contracts/drafts/Counters.sol';
+import '../../node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol';
+import '../../node_modules/openzeppelin-solidity/contracts/token/ERC721/IERC721Receiver.sol';
 import "./Oraclize.sol";
 
 contract Ownable {
     address private _owner;
 
-    function getOwner() public returns (address) {
+    function getOwner() public view returns (address) {
         return _owner;
     }
 
@@ -154,7 +154,7 @@ contract ERC721 is Pausable, ERC165 {
     function approve(address to, uint256 tokenId) public whenNotPaused {
         require(ownerOf(tokenId) != to, "The given address to should not be the owner of the tokenId");
 
-        require(msg.sender == getOwner() || isApprovedForAll(),
+        require(msg.sender == getOwner() || isApprovedForAll(msg.sender, to),
             "msg sender should be the owner of the contract or isApprovedForAll() be true");
 
         // add 'to' address to token approvals
@@ -237,7 +237,7 @@ contract ERC721 is Pausable, ERC165 {
         // revert if given tokenId already exists or given address is invalid
         require(_exists(tokenId) == false, "given tokenId already exists");
         require(to != address(0), "Not a real address");
-  
+
         // mint tokenId to given address & increase token count of owner
         _tokenOwner[tokenId] = to;
         Counters.increment(_ownedTokensCount[to]);
@@ -332,7 +332,7 @@ contract ERC721Enumerable is ERC165, ERC721 {
      * @return uint256 token ID at the given index of the tokens list owned by the requested address
      */
     function tokenOfOwnerByIndex(address owner, uint256 index) public view returns (uint256) {
-        require(index < balanceOf(owner));
+        require(index < balanceOf(owner), "index should < balanceOf(owner)");
         return _ownedTokens[owner][index];
     }
 
@@ -351,7 +351,7 @@ contract ERC721Enumerable is ERC165, ERC721 {
      * @return uint256 token ID at the given index of the tokens list
      */
     function tokenByIndex(uint256 index) public view returns (uint256) {
-        require(index < totalSupply());
+        require(index < totalSupply(), "index should < totalSupply()");
         return _allTokens[index];
     }
 
@@ -469,10 +469,14 @@ contract ERC721Enumerable is ERC165, ERC721 {
 }
 
 contract ERC721Metadata is ERC721Enumerable, usingOraclize {
-    
-    // TODO: Create private vars for token _name, _symbol, and _baseTokenURI (string)
 
-    // TODO: create private mapping of tokenId's to token uri's called '_tokenURIs'
+    // vars for token
+    string private _name;
+    string private _symbol;
+    string private _baseTokenURI;
+
+    // mapping of tokenId's to token uri's
+    mapping(uint256 => string) private _tokenURI;
 
     bytes4 private constant _INTERFACE_ID_ERC721_METADATA = 0x5b5e139f;
     /*
@@ -484,29 +488,46 @@ contract ERC721Metadata is ERC721Enumerable, usingOraclize {
 
 
     constructor (string memory name, string memory symbol, string memory baseTokenURI) public {
-        // TODO: set instance var values
+        // set instance var values
+        _name = name;
+        _symbol = symbol;
+        _baseTokenURI = baseTokenURI;
 
         _registerInterface(_INTERFACE_ID_ERC721_METADATA);
     }
 
-    // TODO: create external getter functions for name, symbol, and baseTokenURI
-
-    function tokenURI(uint256 tokenId) external view returns (string memory) {
-        require(_exists(tokenId));
-        return _tokenURIs[tokenId];
+    function getName() external view returns (string memory) {
+        return _name;
     }
 
+    function getSymbol() external view returns (string memory) {
+        return _symbol;
+    }
 
-    // TODO: Create an internal function to set the tokenURI of a specified tokenId
+    function getBaseTokenURI() external view returns (string memory) {
+        return _baseTokenURI;
+    }
+
+    function tokenURI(uint256 tokenId) external view returns (string memory) {
+        require(_exists(tokenId), "token id should exist");
+        return _tokenURI[tokenId];
+    }
+
+    // Internal function to set the tokenURI of a specified tokenId
     // It should be the _baseTokenURI + the tokenId in string form
     // TIP #1: use strConcat() from the imported oraclizeAPI lib to set the complete token URI
     // TIP #2: you can also use uint2str() to convert a uint to a string
         // see https://github.com/oraclize/ethereum-api/blob/master/oraclizeAPI_0.5.sol for strConcat()
     // require the token exists before setting
+    function _setTokenURI(uint256 tokenId) internal {
+        require(_exists(tokenId), "token id should exist");
+
+        _tokenURI[tokenId] = strConcat(_baseTokenURI, uint2str(tokenId));
+    }
 
 }
 
-//  TODO's: Create CustomERC721Token contract that inherits from the ERC721Metadata contract. You can name this contract as you please
+//  CustomERC721Token contract that inherits from the ERC721Metadata contract. You can name this contract as you please.
 //  1) Pass in appropriate values for the inherited ERC721Metadata contract
 //      - make the base token uri: https://s3-us-west-2.amazonaws.com/udacity-blockchain/capstone/
 //  2) create a public mint() that does the following:
@@ -514,6 +535,14 @@ contract ERC721Metadata is ERC721Enumerable, usingOraclize {
 //      -takes in a 'to' address, tokenId, and tokenURI as parameters
 //      -returns a true boolean upon completion of the function
 //      -calls the superclass mint and setTokenURI functions
+contract CustomERC721Token is ERC721Metadata("My cool ERC721Token", "MCE", "https://s3-us-west-2.amazonaws.com/udacity-blockchain/capstone/") {
+    function mint(address to, uint256 tokenId, string memory tokenURI) public onlyOwner returns(bool) {
+        super._mint(to, tokenId);
+        super._setTokenURI(tokenId);
 
+        // ToDo: tokenURI parameter not required?
 
-
+        // If no errors (e.g. require fail in functions), return success
+        return true;
+    }
+}
