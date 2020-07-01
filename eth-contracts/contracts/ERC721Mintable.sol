@@ -536,11 +536,11 @@ contract ERC721Metadata is ERC721Enumerable, usingOraclize {
 //      -returns a true boolean upon completion of the function
 //      -calls the superclass mint and setTokenURI functions
 contract CustomERC721Token is ERC721Metadata("My cool ERC721Token", "MCE", "https://s3-us-west-2.amazonaws.com/udacity-blockchain/capstone/") {
-    function mint(address to, uint256 tokenId, string memory tokenURI) public onlyOwner returns(bool) {
+    function mint(address to, uint256 tokenId
+    //string memory tokenURI --> note: parameter is not required, because it can be set by constructor. see https://knowledge.udacity.com/questions/57087
+    ) public onlyOwner returns(bool) {
         super._mint(to, tokenId);
         super._setTokenURI(tokenId);
-
-        // ToDo: tokenURI parameter not required?
 
         // If no errors (e.g. require fail in functions), return success
         return true;
