@@ -1,5 +1,4 @@
-// ToDo siehe Zeile 454 in eth-contracts\contracts\ERC721Mintable.sol
-var ERC721MintableComplete = artifacts.require('ERC721Mintable');
+var ERC721MintableComplete = artifacts.require('CustomERC721Token');
 
 contract('TestERC721Mintable', accounts => {
 
@@ -10,11 +9,23 @@ contract('TestERC721Mintable', accounts => {
         beforeEach(async function () { 
             this.contract = await ERC721MintableComplete.new({from: account_one});
 
-            // TODO: mint multiple tokens
+            // mint multiple tokens
+            let addressTo1 = account_one;
+            let addressTo2 = account_two;
+
+            let tokenId1 = 1;
+            let tokenId2 = 2;
+            let tokenId3 = 3;
+
+            await this.contract.mint(addressTo1, tokenId1, {from: account_one});
+            await this.contract.mint(addressTo2, tokenId2, {from: account_one});
+            await this.contract.mint(addressTo1, tokenId3, {from: account_one});
         })
 
         it('should return total supply', async function () { 
-            // ToDo
+            let supply = await this.contract.totalSupply.call();
+
+            assert.equal(supply, 3, "should return total supply.");
         })
 
         it('should get token balance', async function () { 
