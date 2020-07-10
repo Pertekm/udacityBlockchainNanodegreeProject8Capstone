@@ -11,7 +11,7 @@ contract('TestERC721Mintable', accounts => {
 
     describe('match erc721 spec', function () {
         beforeEach(async function () { 
-            this.contract = await ERC721MintableComplete.new({from: account_one});
+            this.contract = await ERC721MintableComplete.new("My cool ERC721Token", "MCE", {from: account_one});
 
             // mint multiple tokens
             let addressTo1 = account_one;
@@ -60,10 +60,10 @@ contract('TestERC721Mintable', accounts => {
 
     describe('have ownership properties', function () {
         beforeEach(async function () { 
-            this.contract = await ERC721MintableComplete.new({from: account_one});
+            this.contract = await ERC721MintableComplete.new("My cool ERC721Token", "MCE", {from: account_one});
         })
 
-        it('should fail when minting when address is not contract owner', async function () { 
+        it('minting should fail when address is not contract owner', async function () { 
             let fail = false;
             try {
                 await this.contract.mint(account_one, tokenId2, {from: account_two});
