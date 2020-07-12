@@ -25,44 +25,62 @@ contract Verifier {
 
 // Soln is an abbreviation for Solution
 contract SolnSquareVerifier is CustomERC721Token {
+
+    using Counters for Counters.Counter;
+
     Verifier private verifierContract;
+
+    struct Solution {
+        uint indexOfSoln;
+        address addressOfSoln;
+        bool passed;
+    }
+
+    Solution[] solution;
+
+    // a mapping to store unique solutions submitted
+    mapping(bytes32 => Solution) solnSubmitted; // hash of input[0],input[1] -> solution
+
+    Counters.Counter private currentSolnIndex;
+
+    // an event to emit when a solution is added
+    event SolutionAdded(uint index, address solutionAddress);
 
     constructor(address verifierAddress, string memory name, string memory symbol)
         CustomERC721Token(name, symbol)
-        public
-    {
+        public {
         verifierContract = Verifier(verifierAddress);
     }
 
-    // TODO define a solutions struct that can hold an index & an address
+    function addSolution(
+            uint[2] memory a,
+            uint[2][2] memory b,
+            uint[2] memory c,
+            uint[2] memory input)
+            public {
+        bytes32 solnHash = keccak256(abi.encodePacked(input[0], input[1]));
+        require(solnSubmitted[solnHash].addressOfSoln == address(0), "Solution has already been added");
 
+        bool isVerified = verifierContract.verifyTx(a, b, c, input);
+        require(isVerified, "Solution is not verified");
 
-    // TODO define an array of the above struct
+        solnSubmitted[solnHash] = Solution(currentSolnIndex.current(), msg.sender, false);
 
-
-    // TODO define a mapping to store unique solutions submitted
-
-
-
-    // TODO Create an event to emit when a solution is added
-
-
-
-    // TODO Create a function to add the solutions to the array and emit the event
-
-
-
-    // TODO Create a function to mint new NFT only after the solution has been verified
-    //  - make sure the solution is unique (has not been used before)
-    //  - make sure you handle metadata as well as tokenSupply
-    /*
-    function mint(address to, uint256 tokenId
-    ) public onlyOwner returns(bool) {
-        super._mint(to, tokenId);
-        super._setTokenURI(tokenId);
-
-        // If no errors (e.g. require fail in functions), return success
-        return true;
+        emit SolutionAdded(currentSolnIndex.current(), msg.sender);
+        currentSolnIndex.increment();
     }
-    */
+
+
+    // mint new NFT only after the solution has been verified
+    function mintNewNFT(uint input1, uint input2, address to) public
+    {
+        bytes32 solnHash = keccak256(abi.encodePacked(input1, input2));
+
+        require(solnSubmitted[solnHash].addressOfSoln != address(0), "Solution does not exist");
+        require(solnSubmitted[solnHash].passed == false, "Solution has already been passed");
+        require(solnSubmitted[solnHash].addressOfSoln == msg.sender, "Only sender with solutionAddress can mint token");
+
+        super.mint(to, solnSubmitted[solnHash].indexOfSoln);
+        solnSubmitted[solnHash].passed = true;
+    }
 }

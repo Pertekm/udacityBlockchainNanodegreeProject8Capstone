@@ -14,32 +14,34 @@ const proof_correct = {
 contract('TestSolnSquareVerifier', accounts => {
 
     const account_one = accounts[0];
+    const account_two = accounts[1];
     
     describe('Test Soln Square verification', function () {
-        beforeEach(async function () { 
+        before(async function () { 
             const verifier = await Verifier.new({from: account_one});
             this.contract = await SolnSquareVerifier.new(verifier.address, "My cool Token", "MCT", {from: account_one});
         })
-        
-        // ToDo Test if an ERC721 token can be minted for contract - SolnSquareVerifier
-        it('if an ERC721 token can be minted', async function () { 
-            await contract.mintNewNFT(
-                proof_correct.proof.A,
-                proof_correct.proof.A_p,
-                proof_correct.proof.B,
-                proof_correct.proof.B_p,
-                proof_correct.proof.C,
-                proof_correct.proof.C_p,
-                proof_correct.input,
-                71,
+                
+        // Test if a new solution can be added for contract - SolnSquareVerifier
+        it('if an solution can be added', async function () { 
+            await this.contract.addSolution(
+                proof_correct.proof.a,
+                proof_correct.proof.b,
+                proof_correct.proof.c,
+                proof_correct.inputs,
                 {from: account_one}
             );      
-            
-            const tokenOwner = await contract.ownerOf(71);
-            assert.equal(tokenOwner, account_one, "token owner is not correct");
         })
 
-        // ToDo Test if a new solution can be added for contract - SolnSquareVerifier
+        // Test if an ERC721 token can be minted for contract - SolnSquareVerifier
+        it('if an ERC721 token can be minted', async function () { 
+            await this.contract.mintNewNFT(
+                proof_correct.inputs[0],
+                proof_correct.inputs[1],
+                account_two, // to address
+                {from: account_one}
+            );
+        })
     })
 })
 
