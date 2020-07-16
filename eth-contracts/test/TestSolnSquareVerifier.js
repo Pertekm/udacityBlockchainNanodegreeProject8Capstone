@@ -15,6 +15,9 @@ contract('TestSolnSquareVerifier', accounts => {
 
     const account_one = accounts[0];
     const account_two = accounts[1];
+
+    console.log("account_one: " + account_one);
+    console.log("account_two: " + account_two);
     
     describe('Test Soln Square verification', function () {
         before(async function () { 
