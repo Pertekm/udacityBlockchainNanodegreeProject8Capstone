@@ -1,11 +1,17 @@
-ToDo of Review:
-OpenSea Marketplace
-Deployment
-Project Deliverables
-
 # Udacity Blockchain Capstone
 
 The capstone will build upon the knowledge you have gained in the course in order to build a decentralized housing product. 
+
+# On rinkeby network
+ Contract Address: 0x85ec5483c8a5f40a5450a8b10dbd7ac6efb52a7a
+
+ Contract Abi's: [see files in folder abi](./eth-contracts/abi)
+
+## migration
+[see this file](./MigrationToRinkeby.md)
+
+## minted and opensea
+[OpenSea MarketPlace Storefront link see this file](./MintedToRinkeby.md)
 
 # ZoKrates
 Version 0.4.6 for solidity version 0.5, instead of latest for 0.6. because current truffle (version 5.1) does only support 0.5. Under windows use powershell instead of cmd.
